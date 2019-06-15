@@ -35,3 +35,6 @@
 * http://www.orangepi-dmx.org/
 * https://github.com/vanvught/rpidmx512
 
+# DMX lighting control software for Mac
+
+* https://lightkeyapp.com/en/ – free as long as you need fewer than 24 channels
