@@ -17,6 +17,7 @@
 
 * [Zihatec RS485 HAT for Raspberry Pi](https://www.hwhardsoft.de/english/projects/rs485-shield/)
   * …Which was used in [this Instructables guide](https://www.instructables.com/id/How-to-Use-DMX512-RDM-With-Raspberry-Pi/)
+* <https://www.instructables.com/id/DMX-512-to-Serial-Adapter/>
 
 ## Raspberry Pi as DMX transmitter/controller ONLY
 
