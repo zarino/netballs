@@ -1,0 +1,45 @@
+---
+- hosts: netball_hub
+  become: true
+  become_method: sudo
+  tasks:
+
+  # - name: Test Ansible
+  #   shell: echo $(whoami) $(date) >> ansible-test.txt
+
+  - name: Add NodeSource packages (for a modern nodejs) to our apt package sources
+    shell: 'curl -sL https://deb.nodesource.com/setup_12.x | bash -'
+
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+
+  - name: Install Mosquitto MQTT broker
+    apt:
+      state: present
+      name:
+      - mosquitto
+      - mosquitto-clients
+
+  - name: Install Node-RED
+    apt:
+      state: present
+      name:
+      - nodejs=12.*
+      - nodered
+
+  - name: Start Node-RED service, and set it to start on boot
+    systemd:
+      name: nodered.service
+      enabled: yes # ie: `sudo systemctl enable nodered.service`
+      state: started # ie: `sudo systemctl start nodered.service`
+
+  - name: Install Node-RED Dashboard package
+    npm:
+      name: node-red-dashboard
+      global: yes
+
+  - name: Restart Node-RED service
+    systemd:
+      name: nodered.service
+      state: restarted # ie: `sudo systemctl restart nodered.service`

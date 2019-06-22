@@ -1,0 +1,7 @@
+netball_hub:
+  hosts:
+    pi:
+      ansible_host: netball-hub.local
+      ansible_user: pi
+  vars:
+    ansible_python_interpreter: /usr/bin/python2.7
