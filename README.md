@@ -33,6 +33,10 @@
 
 * [Sparkfun –  Using Artnet DMX and the ESP32 to Drive Pixels](https://learn.sparkfun.com/tutorials/using-artnet-dmx-and-the-esp32-to-drive-pixels)
 
+## Arduino as DMX receiver
+
+* https://www.maxpierson.me/2009/04/29/arduino-dmx-512-io-shield/
+
 # I have no idea what this is all about, but it looks promising
 
 * <https://sites.google.com/site/rpidmx512/>
