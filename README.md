@@ -9,9 +9,10 @@
 
 ## DMX interfaces
 
-* DMX interface board for Raspberry Pi, with input and output – <https://www.bitwizard.nl/shop/DMX-interface-for-Raspberry-pi>
+* [Bitwizard DMX interface board for Raspberry Pi](https://www.bitwizard.nl/shop/DMX-interface-for-Raspberry-pi) – with input and output
 * Enttec seem to have cornered the market on USB-to-DMX adaptors – <https://www.enttec.co.uk/product/protocols-gb/dmx512-gb/open-dmx-usb/> – fairly expensive.
 * Chap using a Raspberry Pi to control lights via a cheap clone of an Enttec USB-to-DMX interface – <https://www.youtube.com/watch?v=ch0sNUbO9lo>
+* A completely DIY DMX interface, using an Arduino – <https://www.instructables.com/id/Build-Your-Own-DMX-Fixture-Arduino/>
 
 ## RS485 interfaces
 
@@ -26,6 +27,7 @@
 * QLC is Linux-based DMX controller software – <https://qlcplus.org/raspberry.html>
 * “DiscoHAT” board sending DMX from a Raspberry Pi – <https://www.discohat.com/discohat/>
 * Another example, using a Velleman USB-to-DMX interface [£61 on Amazon](https://www.amazon.co.uk/Velleman-K8062-Controlled-Interface-multicolored/dp/B000TA79UK) – <https://www.instructables.com/id/Raspberry-Pi-as-a-DMX-light-controller/>
+* ["Tinkerkit" Arduino DMX Master Shield at RS Components](https://uk.rs-online.com/web/p/processor-microcontroller-development-kits/7798870/)
 
 ## ESP32 as DMX receiver
 
@@ -33,9 +35,23 @@
 
 # I have no idea what this is all about, but it looks promising
 
-* http://www.orangepi-dmx.org/
-* https://github.com/vanvught/rpidmx512
+* <https://sites.google.com/site/rpidmx512/>
+   * <https://sites.google.com/site/rpidmx512/raspberry-pi-rdm-controller>
+   * <https://sites.google.com/site/rpidmx512/raspberry-pi-rdm-responder>
+* <https://github.com/vanvught/rpidmx512>
 
 # DMX lighting control software for Mac
 
-* https://lightkeyapp.com/en/ – free as long as you need fewer than 24 channels
+* <https://zarino.co.uk/post/udmx-mac/> – uDMX command line utility
+* <https://lightkeyapp.com/en/> – free as long as you need fewer than 24 channels
+
+# Raspberry Pi as Wifi access point and client
+
+* <https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md#internet-sharing>
+* <https://lb.raspberrypi.org/forums/viewtopic.php?t=211542>
+* <http://www.marrold.co.uk/2017/03/using-raspberry-pi-3-as-wifi-client-and.html>
+* <https://raspberrypi.stackexchange.com/questions/67601/>
+
+# MQTT
+
+* <https://github.com/DoESLiverpool/somebody-should/wiki/MQTT-services>
