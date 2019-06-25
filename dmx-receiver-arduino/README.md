@@ -21,3 +21,4 @@ Once you’ve uploaded the code to the Arduino, remember re-activate the shield 
 
 * https://forum.arduino.cc/index.php?topic=458860.0
 * https://raspberrypi.stackexchange.com/questions/62206/sending-and-receiving-string-data-between-arduino-and-raspberry-pi-using-the-i2c
+* https://www.raspberrypi-spy.co.uk/2018/09/using-a-level-shifter-with-the-raspberry-pi-gpio/
