@@ -59,3 +59,8 @@
 # MQTT
 
 * <https://github.com/DoESLiverpool/somebody-should/wiki/MQTT-services>
+
+# Power control for Raspberry Pi
+
+* £6.50 OnOff SHIM – from [Pimoroni](https://shop.pimoroni.com/products/onoff-shim) or [The PiHut](https://thepihut.com/collections/raspberry-pi-hats/products/onoff-shim)
+* £15 [Pi Supply Switch](https://uk.pi-supply.com/products/pi-supply-raspberry-pi-power-switch)
