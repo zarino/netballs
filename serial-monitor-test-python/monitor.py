@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     '-p',
     '--port',
-    default="/dev/ttyUSB0",
+    default="/dev/ttyS0",
     help="Port on which to listen for input"
 )
 parser.add_argument(

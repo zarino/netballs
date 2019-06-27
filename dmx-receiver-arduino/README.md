@@ -2,11 +2,11 @@
 
 We have a cheap Arduino Uno clone, and a [Conceptinetics CTC-DRA-10-R2 DMX shield](https://www.tindie.com/products/Conceptinetics/dmx-shield-for-arduino-rdm-capable/).
 
-The aim is to have the Uno read incoming DMX commands, on a configurable range of channels, and then send those commands to a connected Raspberry Pi, most likely via a [YF08E voltage translator](http://www.datasheetcafe.com/yf08e-pdf-datasheet-30695/) and an [I2C connection](https://oscarliang.com/raspberry-pi-arduino-connected-i2c/), since Arduino can’t send serial comms over USB when the shield is attached.
+The aim is to have the Uno read incoming DMX commands, on a configurable range of channels, and then send those commands to a connected Raspberry Pi, via SoftwareSerial, since the Arduino can’t send serial comms over USB when the DMX shield is attached.
 
-Not sure yet whether the Arduino should be the I2C master (sending the latest DMX data to the Pi), or whether the Pi should be the master (sending _requests_ for the latest data to the Arduino). Will investigate.
+We’ll use a [YF08E voltage translator](http://www.datasheetcafe.com/yf08e-pdf-datasheet-30695/) to protect the Raspberry Pi’s 3.3V GPIO from the Arduino’s 5V output.
 
-## How to run this code
+## How to set up the Arduino
 
 You need to install the Conceptinetics DMX Library onto your computer before you can compile the code.
 
@@ -16,6 +16,27 @@ You need to install the Conceptinetics DMX Library onto your computer before you
 If the DMX shield is in place on the Arduino Uno, make sure its `EN` jumper is in the "off" position (shown as `EN` with a line above it, ie: "NOT EN") when you are uploading code to the Arduino. The DMX shield communicates with the Arduino over serial, so you must turn the shield off (by setting the `EN` jumper to "off") to re-enable normal serial communication between your computer and the Arduino.
 
 Once you’ve uploaded the code to the Arduino, remember re-activate the shield by turning the `EN` jumper to the "on" position (shown as `EN` without a line above it).
+
+## How to set up the Raspberry Pi
+
+See [../serial-monitor-test-python](../serial-monitor-test-python).
+
+## How to connect the Arduino and the Pi, via the voltage translator
+
+<https://pinout.xyz> will come in useful for identifying the Pi GPIO pins.
+
+* Arduino pin 10 -> Voltage translator B1
+* Arduino pin 11 -> Voltage translator B2
+* Arduino 5V -> Voltage translator VB
+* Arduino GND -> Voltage translator GND
+
+* Raspberry Pi USB -> Arduino USB (for power, and common ground)
+
+* Pi pin 1 -> Voltage translator VA
+* Pi pin 8 -> Voltage translator A1
+* Pi pin 10 -> Voltage translator A2
+
+* Voltage translator VA -> Voltage translator OE
 
 ## Useful links
 
