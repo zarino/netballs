@@ -2,7 +2,7 @@
 
 We have a cheap Arduino Uno clone, and a [Conceptinetics CTC-DRA-10-R2 DMX shield](https://www.tindie.com/products/Conceptinetics/dmx-shield-for-arduino-rdm-capable/).
 
-The aim is to have the Uno read incoming DMX commands, on a configurable range of channels, and then send those commands to a connected Raspberry Pi, via SoftwareSerial, since the Arduino can’t send serial comms over USB when the DMX shield is attached.
+The aim is to have the Uno read incoming DMX commands, on a configurable range of channels, and then send those commands to a connected Raspberry Pi, via [SoftwareSerial](https://www.arduino.cc/en/Reference/SoftwareSerial), since the Arduino can’t send serial comms over USB when the DMX shield is attached.
 
 We’ll use a [YF08E voltage translator](http://www.datasheetcafe.com/yf08e-pdf-datasheet-30695/) to protect the Raspberry Pi’s 3.3V GPIO from the Arduino’s 5V output.
 

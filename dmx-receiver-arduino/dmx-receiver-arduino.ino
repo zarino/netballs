@@ -2,35 +2,40 @@
 #include <Rdm_Uid.h>
 #include <Conceptinetics.h>
 
+#include <SoftwareSerial.h>
+
 // Number of channels to be monitored by the dmx_slave object,
 // starting with the start address.
 #define DMX_SLAVE_CHANNELS 5
 
+// The first channel to monitor.
+// As it happens, 1 is the default for .setStartAddress() anyway.
+#define DMX_START_ADDRESS 1
+
+// We're using Software Serial, because the normal serial pins
+// and USB serial comms are being used by the DMX shield.
+#define SERIAL_RX_PIN 10
+#define SERIAL_TX_PIN 11
+#define SERIAL_BAUD_RATE 9600
+
 DMX_Slave dmx_slave(DMX_SLAVE_CHANNELS);
+
+SoftwareSerial software_serial(SERIAL_RX_PIN, SERIAL_TX_PIN);
 
 void setup() {
     // Enable DMX slave interface and start recording DMX data.
     dmx_slave.enable();
 
-    // Set start address to 1 (this is also the default setting).
-    dmx_slave.setStartAddress(1);
+    dmx_slave.setStartAddress(DMX_START_ADDRESS);
 
-    // Set led pin as output pin.
-    pinMode(LED_BUILTIN, OUTPUT);
+    software_serial.begin(SERIAL_BAUD_RATE);
 }
 
 void loop() {
-    if ( dmx_slave.getChannelValue(1) > 127 ) {
-        // Fast blink when we get a high value over DMX.
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(100);
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(100);
-    } else {
-        // Slow blink when we get a low value over DMX.
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(100);
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(1900);
+    // Send the values of the DMX channels, over serial, as space separated string.
+    for (int i=DMX_START_ADDRESS; i<DMX_START_ADDRESS+DMX_SLAVE_CHANNELS; i++) {
+        software_serial.print( dmx_slave.getChannelValue(i) );
+        software_serial.print( ' ' );
     }
+    software_serial.println();
 }
