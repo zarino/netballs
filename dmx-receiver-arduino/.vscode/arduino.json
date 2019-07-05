@@ -1,5 +1,0 @@
-{
-    "board": "arduino:avr:uno",
-    "sketch": "dmx-receiver-arduino.ino",
-    "port": "/dev/cu.usbmodem1411"
-}

@@ -1,5 +1,0 @@
-{
-    "sketch": "dip-switch-arduino.ino",
-    "board": "arduino:avr:uno",
-    "port": "/dev/cu.usbmodem1411"
-}
