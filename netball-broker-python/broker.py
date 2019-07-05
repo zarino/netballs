@@ -27,6 +27,13 @@ parser.add_argument(
     default="netball-hub.local",
     help="MQTT server hostname to publish to"
 )
+parser.add_argument(
+    '-v',
+    '--verbose',
+    action='store_true',
+    default=False,
+    help="Print messages to stdout in addition to sending over MQTT"
+)
 args = parser.parse_args()
 
 # Set up our serial receiver.
@@ -54,11 +61,16 @@ def extract_values(list_of_values):
 while True:
     try:
         serial_line = ser.readline()
+
         for topic_suffix, value in extract_values(serial_line).items():
             publish.single(
                 "{}{}".format(topic_base, topic_suffix),
                 value,
                 hostname=args.server
             )
+
+            if args.verbose:
+                print "{}{} {}".format(topic_base, topic_suffix, value)
+
     except KeyboardInterrupt as k:
         break
