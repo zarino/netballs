@@ -52,7 +52,6 @@ Visit the [Configure hostspot](http://netball-hub.local/index.php?page=hostapd_c
 * Basic->SSID: `netball-hub-wifi`
 * Security->PSK: `bubblino`
 * Advanced->Country Code: `United Kingdom`
-* Advanced->Wifi client AP mode: `Enabled`
 
 Press the "Save settings" button, then cross your fingers. The `raspi-webgui` network should disappear, and a new `netball-hub-wifi` should replace it.
 
