@@ -54,7 +54,7 @@ def extract_values(list_of_values):
 while True:
     try:
         serial_line = ser.readline()
-        for topic_suffix, value in extract_values(serial_line):
+        for topic_suffix, value in extract_values(serial_line).items():
             publish.single(
                 "{}{}".format(topic_base, topic_suffix),
                 value,
