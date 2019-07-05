@@ -1,0 +1,12 @@
+[Unit]
+Description=Netball broker
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /home/pi/netballs/netball-broker-python/broker.py
+WorkingDirectory=/home/pi/netballs/netball-broker-python/
+User=pi
+
+[Install]
+WantedBy=multi-user.target
