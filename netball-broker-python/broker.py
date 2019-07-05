@@ -22,8 +22,8 @@ parser.add_argument(
     help="Bit rate of expected serial data"
 )
 parser.add_argument(
-    '-h',
-    '--hostname',
+    '-s',
+    '--server',
     default="netball-hub.local",
     help="MQTT server hostname to publish to"
 )
@@ -58,7 +58,7 @@ while True:
             publish.single(
                 "{}{}".format(topic_base, topic_suffix),
                 value,
-                hostname=args.hostname
+                hostname=args.server
             )
     except KeyboardInterrupt as k:
         break
