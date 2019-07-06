@@ -52,15 +52,45 @@ Press the `Return` key a few times, and you should be given a command prompt lik
 
 You can exit the `screen` session by pressing `ctrl`–`A` then `D`.
 
+
+### Upload the `minimalmdns.py` package onto the board
+
+The ESP32 has a very simple filesystem. By default, the Python path expects local packages to be in the `/lib` directory. So we’ll need to create that directory, and then copy our `minimalmdns.py` package into it.
+
+You do both of these things with the `ampy` command, installed as part of the `pip install -r requirements.txt` line you ran earlier.
+
+First create the `/lib` directory on the ESP32:
+
+    ampy --port /dev/tty.SLAB_USBtoUART mkdir /lib
+
+Now copy `minimalmdns.py` into that `/lib` directory:
+
+    ampy --port /dev/tty.SLAB_USBtoUART put vendor/minimalmdns.py /lib/minimalmdns.py
+
+
 ### Upload `main.py` onto the board
 
-The ESP32 has a filesystem, and will run `/boot.py` on startup (if the file exists) and then `/main.py`.
-
-You can upload files to the ESP32’s filesystem using the `ampy` command, installed as part of the `pip install -r requirements.txt` line you ran earlier.
+The ESP32 will run `/boot.py` on startup (if the file exists) and then `/main.py`.
 
 To upload `main.py` to the ESP32:
 
     ampy --port /dev/tty.SLAB_USBtoUART put main.py
+
+### Send test MQTT messages
+
+Run commands like this to control the ESP32:
+
+    mosquitto_pub --host netball-hub.local --topic netball/red -m 255
+
+### Open a Python terminal on the ESP32
+
+To open a terminal session on the ESP32:
+
+    screen /dev/tty.SLAB_USBtoUART 115200
+
+Press Enter or `Ctrl`-`C` to get to a Python REPL prompt.
+
+Press `Ctrl`-`A` then `Ctrl`-`\`, then `Y` to exit.
 
 ## Useful links
 
