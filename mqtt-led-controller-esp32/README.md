@@ -1,10 +1,14 @@
 # mqtt-led-controller-esp32
 
-TODO: Description
+This MicroPython code tells the ESP32 how to:
+
+1. Connect to the `netball-hub-wifi` network being broadcast by the [netball-hub](../netball-hub) Raspberry Pi.
+2. Listen for MQTT messages on the `netball/…` topic, eg: `netball/red 255`
+3. Translate those MQTT messages into control signals for the connected SK6812 LEDs.
 
 ## How to use this
 
-### Install the serial driver
+### Install the serial driver onto your computer
 
 Download and install the [CP210x USB-to-UART Bridge VCP serial driver](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers) if you don’t already have it.
 
@@ -50,7 +54,7 @@ To test the MicroPython firmware has been correctly installed, open a terminal e
 
 Press the `Return` key a few times, and you should be given a command prompt like `>>>`. If you type some simple Python in here (like `1+1`) you should get an answer (`2`).
 
-You can exit the `screen` session by pressing `ctrl`–`A` then `D`.
+You can exit the `screen` session by pressing `ctrl`–`A` then `ctrl`–`\`.
 
 
 ### Upload the `minimalmdns.py` package onto the board
