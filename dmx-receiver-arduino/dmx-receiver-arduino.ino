@@ -26,9 +26,7 @@ SoftwareSerial software_serial(SERIAL_RX_PIN, SERIAL_TX_PIN);
 // software_serial.print() inside the onReceiveComplete callback.
 // So here we set up an array to batch up values, so we can print
 // a bunch of them at once, outside the getChannelValue() loop.
-#define BATCH_SIZE 20
-uint8_t valuesToPrint[BATCH_SIZE];
-uint8_t valuesStored = 0;
+uint8_t latestValues[DMX_SLAVE_CHANNELS];
 
 void setup() {
     // Enable DMX slave interface and start recording DMX data.
@@ -43,30 +41,21 @@ void setup() {
 }
 
 void loop() {
-
+    for (int i=0; i<DMX_SLAVE_CHANNELS; i++) {
+        software_serial.print( latestValues[i] );
+        software_serial.print( " " );
+    }
+    software_serial.println();
+    delay(200);
 }
 
 void onFrameReceiveComplete (unsigned short channelsReceived) {
+    // Wait until we've been notified about a frame with all the required channels.
     if ( channelsReceived == DMX_SLAVE_CHANNELS) {
-
+        // Store the current value of each channel, so the main loop()
+        // can access the latest values when it comes time to print.
         for (int i=DMX_START_ADDRESS; i<DMX_START_ADDRESS+DMX_SLAVE_CHANNELS; i++) {
-            valuesToPrint[valuesStored] = dmx_slave.getChannelValue(i);
-            valuesStored++;
+            latestValues[i-DMX_START_ADDRESS] = dmx_slave.getChannelValue(i);
         }
-
-        if (valuesStored == BATCH_SIZE) {
-
-            int8_t index = 0;
-            for (int row=0; row<(BATCH_SIZE / DMX_SLAVE_CHANNELS); row++) {
-                for (int j=0; j<DMX_SLAVE_CHANNELS; j++) {
-                    software_serial.print( valuesToPrint[ index++] );
-                    software_serial.print( " " );
-                }
-                software_serial.println();
-            }
-
-            valuesStored = 0;
-        }
-
     }
 }
