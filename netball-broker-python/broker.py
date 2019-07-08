@@ -39,38 +39,51 @@ args = parser.parse_args()
 # Set up our serial receiver.
 ser = serial.Serial(args.port, args.bitrate, timeout=1)
 
-# This is the namespace our MQTT messages will start with.
-topic_base = "netball/"
+# Starts off as an empty list, but will be filled
+# the first time we receive values over serial.
+latest_values = []
 
-# These will get concatenated onto the end of topic_base.
-channels = [
-    "red",
-    "green",
-    "blue",
-    "white",
-    "sparkle",
-]
 
-# Turn a space-separated list of numbers (0-255)
-# into a channel:number dictionary.
-def extract_values(list_of_values):
-    values = list_of_values.strip().split()
-    return dict( zip(channels, values) )
+def publish_values(list_of_values):
+    latest_values_string = list_as_string(list_of_values)
+    publish.single(
+        "netball/all",
+        latest_values_string,
+        hostname=args.server
+    )
+    if args.verbose:
+        print "Published: {}".format( latest_values_string )
+
+
+def ignore_values(list_of_values):
+    if args.verbose:
+        print "Ignored: {}".format( list_as_string(list_of_values) )
+
+
+def list_as_string(list_of_things):
+    return ' '.join(str(x) for x in list_of_things)
+
+
+def string_as_list_of_ints(serial_line):
+    return [ int(x) for x in serial_line.split() ]
+
 
 # While loop and try/except lets us kill the script with ctrl-C.
 while True:
     try:
-        serial_line = ser.readline()
+        serial_line = ser.readline().strip(' \rn')
+        incoming_values = string_as_list_of_ints(serial_line)
 
-        for topic_suffix, value in extract_values(serial_line).items():
-            publish.single(
-                "{}{}".format(topic_base, topic_suffix),
-                value,
-                hostname=args.server
-            )
-
+        if len(incoming_values) == 5:
+            if latest_values != incoming_values:
+                latest_values = incoming_values
+                publish_values(latest_values)
+            else:
+                ignore_values(incoming_values)
+        else:
             if args.verbose:
-                print "{}{} {}".format(topic_base, topic_suffix, value)
+                print "Too short: {}".format(serial_line)
 
     except KeyboardInterrupt as k:
+        print ""
         break
