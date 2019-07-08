@@ -46,7 +46,7 @@ void loop() {
         software_serial.print( " " );
     }
     software_serial.println();
-    delay(200);
+    delay(50);
 }
 
 void onFrameReceiveComplete (unsigned short channelsReceived) {
