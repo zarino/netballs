@@ -6,7 +6,7 @@
 
 // Number of channels to be monitored by the dmx_slave object,
 // starting with the start address.
-#define DMX_SLAVE_CHANNELS 5
+#define DMX_SLAVE_CHANNELS 1
 
 // The first channel to monitor.
 // As it happens, 1 is the default for .setStartAddress() anyway.
