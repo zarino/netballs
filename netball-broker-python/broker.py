@@ -2,6 +2,8 @@
 
 # -*- coding: utf-8 -*-
 
+from __future__ import division
+
 import random
 import argparse
 import serial
@@ -61,69 +63,39 @@ GPIO.setup(BUTTON_PURPLE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(BUTTON_SPARKLE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # If manual mode isn't enabled, we'll take the numeric value sent
-# over serial from the DMX Arduino, and translate it to values
-# that the ESP32 can understand.
-PRESETS = {
-    # Black, with increasing amounts of sparkle.
-    10: [0, 0, 0, 0, 0],
-    11: [0, 0, 0, 0, 5],
-    12: [0, 0, 0, 0, 10],
-    13: [0, 0, 0, 0, 15],
-    14: [0, 0, 0, 0, 25],
-    15: [0, 0, 0, 0, 50],
+# over serial from the DMX Arduino, and translate it to the RGBWS value
+# at the given point in the routine.
+#
+# This list represents "sections" of the routine.
+# First item is the percentage through the show that the section starts.
+# Second item is the RGBWS DMX value at the start of that section.
+# Note that half of our sections involve a smooth "fade" from one RGBWS to another!
+SECTIONS = [
+    (0,  [0, 0, 0, 0, 0]), # 0-5% black
+    (5,  [0, 0, 0, 0, 0]), # 5-15% fade black <-> sparkles
+    (15, [0, 0, 0, 0, 25]), # 15-20% sparkles
+    (20, [0, 0, 0, 0, 25]), # 20-30% fade sparkles <-> blue
+    (30, [0, 0, 255, 0, 25]), # 30-35% blue
+    (35, [0, 0, 255, 0, 25]), # 35-45 fade blue <-> purple
+    (45, [150, 0, 255, 0, 25]), # 45-50% purple
+    (50, [150, 0, 255, 0, 25]), # 50-60% fade purple <-> pink
+    (60, [255, 0, 150, 0, 25]), # 60-65% pink
+    (65, [255, 0, 150, 0, 25]), # 65-75% fade pink <-> gold
+    (75, [255, 125, 0, 0, 25]), # 75-80% gold
+    (80, [255, 125, 0, 0, 25]), # 80-90% fade gold <-> white
+    (90, [255, 255, 255, 255, 0]), # 90-95% white
+    (95, [255, 255, 255, 255, 0]), # 95-100% fade white <-> black
+    (100, [0, 0, 0, 0, 0]), # 100% black
+]
 
-    # Low power white, with increasing amounts of sparkle.
-    20: [0, 0, 0, 255, 0],
-    21: [0, 0, 0, 255, 5],
-    22: [0, 0, 0, 255, 10],
-    23: [0, 0, 0, 255, 15],
-    24: [0, 0, 0, 255, 25],
-    25: [0, 0, 0, 255, 50],
-
-    # Ultra bright white - no need for sparkles here,
-    # since all the pixels are already fully white.
-    30: [255, 255, 255, 255, 0],
-
-    # Blue, with increasing amounts of sparkle.
-    40: [0, 0, 255, 0, 0],
-    41: [0, 0, 255, 0, 5],
-    42: [0, 0, 255, 0, 10],
-    43: [0, 0, 255, 0, 15],
-    44: [0, 0, 255, 0, 25],
-    45: [0, 0, 255, 0, 50],
-
-    # Gold, with increasing amounts of sparkle.
-    50: [255, 125, 0, 0, 0],
-    51: [255, 125, 0, 0, 5],
-    52: [255, 125, 0, 0, 10],
-    53: [255, 125, 0, 0, 15],
-    54: [255, 125, 0, 0, 25],
-    55: [255, 125, 0, 0, 50],
-
-    # Pink, with increasing amounts of sparkle.
-    60: [255, 0, 150, 0, 0],
-    61: [255, 0, 150, 0, 5],
-    62: [255, 0, 150, 0, 10],
-    63: [255, 0, 150, 0, 15],
-    64: [255, 0, 150, 0, 25],
-    65: [255, 0, 150, 0, 50],
-
-    # Purple, with increasing amounts of sparkle.
-    70: [150, 0, 255, 0, 0],
-    71: [150, 0, 255, 0, 5],
-    72: [150, 0, 255, 0, 10],
-    73: [150, 0, 255, 0, 15],
-    74: [150, 0, 255, 0, 25],
-    75: [150, 0, 255, 0, 50],
-}
 
 # If manual mode is enabled, these are the four colours
 # which map to the four manual buttons.
 MANUAL_PRESETS = {
-    'BLUE': PRESETS[40],
-    'GOLD': PRESETS[50],
-    'PINK': PRESETS[60],
-    'PURPLE': PRESETS[70],
+    'BLUE': SECTIONS[4][1],
+    'PURPLE': SECTIONS[6][1],
+    'PINK': SECTIONS[8][1],
+    'GOLD': SECTIONS[10][1],
 }
 
 current_manual_preset = None
@@ -153,18 +125,13 @@ def check_for_serial_data():
     serial_line = ser.readline().strip(' \rn')
 
     try:
-        requested_preset = int(serial_line)
+        serial_dmx_value = int(serial_line)
     except ValueError:
         if args.verbose:
             print "Non-numeric value received over serial: {}".format(serial_line)
         return False
 
-    try:
-        requested_rgbws = PRESETS[requested_preset]
-    except KeyError:
-        if args.verbose:
-            print "Unknown preset requested: {}".format(requested_preset)
-        return False
+    requested_rgbws = get_rgbws_for_dmx_value(serial_dmx_value)
 
     if latest_rgbws != requested_rgbws:
         latest_rgbws = requested_rgbws
@@ -227,6 +194,27 @@ def check_for_manual_data():
 
     if republish:
         publish_rgbws(latest_rgbws)
+
+
+def get_rgbws_for_dmx_value(xd):
+    # Rough percentage that the engineer requested
+    x = dmx_value_to_percent(xd)
+
+    # The "section" of the routine that we're interested in.
+    sec = max( i for i in range(len(SECTIONS)) if x >= SECTIONS[i][0] )
+
+    # How far through the section we are, as a number between 0 and 1.
+    a = (x - SECTIONS[sec][0]) / (SECTIONS[sec+1][0] - SECTIONS[sec][0])
+
+    # Generate a smoothly faded rgbws value list, based on our progress between
+    # the current section's rgbws value, and the next section's rgbws value.
+    rgbws = [ int(p+a*(q-p)) for p, q in zip(SECTIONS[sec][1], SECTIONS[sec+1][1]) ]
+
+    return rgbws
+
+
+def dmx_value_to_percent(dmx_value):
+    return (dmx_value / 256) * 100
 
 
 def publish_rgbws(list_of_rgbws):
