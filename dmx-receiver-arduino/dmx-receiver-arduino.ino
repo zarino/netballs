@@ -12,6 +12,10 @@
 // As it happens, 1 is the default for .setStartAddress() anyway.
 #define DMX_START_ADDRESS 1
 
+// To allow the DMX decoder to "settle into a rythm" we wait
+// till it has successfully decoded FRAMES_TO_WAIT frames before continuing
+#define FRAMES_TO_WAIT 2
+
 // We're using Software Serial, because the normal serial pins
 // and USB serial comms are being used by the DMX shield.
 #define SERIAL_RX_PIN 10
@@ -28,6 +32,13 @@ SoftwareSerial software_serial(SERIAL_RX_PIN, SERIAL_TX_PIN);
 // a bunch of them at once, outside the getChannelValue() loop.
 uint8_t latestValues[DMX_SLAVE_CHANNELS];
 
+// In an attempt to fully separate the DMX decoding from the Serial printing
+// we've implemented a turn-taking system whereby the main program waits in an
+// empty loop until the DMX decoder has decoded FRAMES_TO_WAIT frames.
+// The decoder is then stopped while the Serial processing and delay are run.
+volatile byte receivedFrames = 0;
+volatile byte waitingForFrames = 1;
+
 void setup() {
     // Enable DMX slave interface and start recording DMX data.
     dmx_slave.enable();
@@ -41,21 +52,31 @@ void setup() {
 }
 
 void loop() {
+    while(waitingForFrames)
+    {
+    }
+    waitingForFrames=1;
     for (int i=0; i<DMX_SLAVE_CHANNELS; i++) {
         software_serial.print( latestValues[i] );
         software_serial.print( " " );
     }
     software_serial.println();
     delay(50);
+    dmx_slave.enable();
 }
 
 void onFrameReceiveComplete (unsigned short channelsReceived) {
-    // Wait until we've been notified about a frame with all the required channels.
     if ( channelsReceived == DMX_SLAVE_CHANNELS) {
+      if(++receivedFrames >= FRAMES_TO_WAIT)  {
+        dmx_slave.disable();
+        // Wait until we've been notified about a frame with all the required channels.
         // Store the current value of each channel, so the main loop()
         // can access the latest values when it comes time to print.
         for (int i=DMX_START_ADDRESS; i<DMX_START_ADDRESS+DMX_SLAVE_CHANNELS; i++) {
             latestValues[i-DMX_START_ADDRESS] = dmx_slave.getChannelValue(i);
         }
+        receivedFrames = 0;
+        waitingForFrames = 0;
+      }
     }
 }
